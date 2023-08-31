@@ -1,10 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
-export const getPosts = (
-  req: Request,
-  res: Response,
-  _: NextFunction
-): void => {
+export const getPosts = (_: Request, res: Response): void => {
   res.status(200).json({
     posts: [
       {
