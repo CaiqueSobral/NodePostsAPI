@@ -3,8 +3,12 @@ import { validationResult } from 'express-validator/src/validation-result';
 import { postModel } from '../models/post';
 
 export const getPosts = async (_: Request, res: Response) => {
-  const posts = await postModel.find();
-  res.status(200).json(posts);
+  try {
+    const posts = await postModel.find();
+    res.status(200).json(posts);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const postPost = async (req: Request, res: Response) => {
