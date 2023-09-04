@@ -11,7 +11,7 @@ export const getPosts = async (
 ) => {
   try {
     const posts = await postModel.find();
-    res.status(200).json(posts);
+    res.status(200).json(posts.reverse());
   } catch (err) {
     const error = new HttpError(String(err), 422);
     next(error);
@@ -96,7 +96,22 @@ export const deletePostById = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const id = req.params.postId;
+  checkValidId(id, next);
+
+  try {
+    const post = await postModel.findById(id);
+    if (!post) throw new HttpError('Post not found', 404);
+
+    await postModel.findByIdAndDelete(id);
+    res.status(200).json({
+      message: 'Post deleted',
+    });
+  } catch (err) {
+    next(new HttpError(String(err), 404));
+  }
+};
 
 const checkValidId = (id: string, next: NextFunction): void => {
   if (!mongoose.Types.ObjectId.isValid(id))
