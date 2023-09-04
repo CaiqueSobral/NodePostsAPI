@@ -12,3 +12,4 @@ router.post(
   ],
   postController.postPost
 );
+router.get('/post/:postId', postController.getPostById);
