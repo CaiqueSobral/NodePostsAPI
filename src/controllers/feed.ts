@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator/src/validation-result';
 import { postModel } from '../models/post';
+import { HttpError } from '../helpers/errors/httpError';
 
 export const getPosts = async (_: Request, res: Response) => {
   try {
@@ -11,13 +12,18 @@ export const getPosts = async (_: Request, res: Response) => {
   }
 };
 
-export const postPost = async (req: Request, res: Response) => {
+export const postPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      message: 'Validation failed',
-      errors: errors,
-    });
+    const error = new HttpError(
+      'Validation failed, Content does not meet requirements.',
+      422
+    );
+    next(error);
   }
 
   const body = req.body;
@@ -34,6 +40,7 @@ export const postPost = async (req: Request, res: Response) => {
       post: result,
     });
   } catch (err) {
-    console.log(err);
+    const error = new HttpError(String(err), 422);
+    next(error);
   }
 };

@@ -1,9 +1,10 @@
 import express, { NextFunction, Request, Response } from 'express';
 import * as feedRoute from './routes/feed';
 import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
 import { env } from 'process';
 import dotenv from 'dotenv';
+import { HttpError } from './helpers/errors/httpError';
+import mongoose from 'mongoose';
 
 const app = express();
 
@@ -19,6 +20,15 @@ app.use((_, res: Response, next: NextFunction) => {
   next();
 });
 app.use('/feed', feedRoute.router);
+
+app.use(
+  (error: HttpError, _: Request, res: Response, __: NextFunction): void => {
+    console.log(error);
+    const message = error.message;
+    const status = error.statusCode || 500;
+    res.status(status).json(message);
+  }
+);
 
 (async () => {
   try {
