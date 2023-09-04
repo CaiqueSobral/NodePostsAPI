@@ -4,12 +4,17 @@ import { postModel } from '../models/post';
 import { HttpError } from '../helpers/errors/httpError';
 import mongoose from 'mongoose';
 
-export const getPosts = async (_: Request, res: Response) => {
+export const getPosts = async (
+  _: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const posts = await postModel.find();
     res.status(200).json(posts);
   } catch (err) {
-    console.log(err);
+    const error = new HttpError(String(err), 422);
+    next(error);
   }
 };
 
@@ -52,7 +57,7 @@ export const getPostById = async (
   next: NextFunction
 ) => {
   const id = req.params.postId;
-  if (!checkValidId(id)) next(new HttpError('Invalid Id Type', 400));
+  checkValidId(id, next);
   try {
     const post = await postModel.findById(id);
     if (!post) {
@@ -64,6 +69,36 @@ export const getPostById = async (
   }
 };
 
-const checkValidId = (id: string): boolean => {
-  return mongoose.Types.ObjectId.isValid(id);
+export const updatePostById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const id = req.params.postId;
+  checkValidId(id, next);
+
+  const { title, content, creator } = req.body;
+  try {
+    const post = await postModel.findById(id);
+    if (!post) throw new HttpError('Post not found', 404);
+
+    post.title = title;
+    post.content = content;
+    post.creator = creator;
+    const updatedPost = await post.save();
+    res.status(200).json({ message: 'post updated', post: updatedPost });
+  } catch (err) {
+    next(new HttpError(String(err), 404));
+  }
+};
+
+export const deletePostById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {};
+
+const checkValidId = (id: string, next: NextFunction): void => {
+  if (!mongoose.Types.ObjectId.isValid(id))
+    next(new HttpError('Invalid Id Type', 400));
 };

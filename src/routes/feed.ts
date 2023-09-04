@@ -13,3 +13,5 @@ router.post(
   postController.postPost
 );
 router.get('/post/:postId', postController.getPostById);
+router.put('/post/:postId', postController.updatePostById);
+router.delete('/post/:postId', postController.deletePostById);
