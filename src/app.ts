@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import * as feedRoute from './routes/feed';
+import * as authRoute from './routes/user';
 import bodyParser from 'body-parser';
 import { env } from 'process';
 import dotenv from 'dotenv';
@@ -20,6 +21,7 @@ app.use((_, res: Response, next: NextFunction) => {
   next();
 });
 app.use('/feed', feedRoute.router);
+app.use('/auth', authRoute.router);
 
 app.use(
   (error: HttpError, _: Request, res: Response, __: NextFunction): void => {
