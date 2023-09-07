@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import * as feedRoute from './routes/feed';
-import * as authRoute from './routes/user';
+import * as authRoute from './routes/auth';
 import bodyParser from 'body-parser';
 import { env } from 'process';
 import dotenv from 'dotenv';
